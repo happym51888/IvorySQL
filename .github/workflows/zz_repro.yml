@@ -1,0 +1,37 @@
+name: zz_repro
+
+on:
+  push:
+    branches: [ ci/repro-scratch ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  repro:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    steps:
+    - uses: actions/checkout@v4
+    - name: dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential bison flex pkg-config \
+            libicu-dev libreadline-dev zlib1g-dev uuid-dev libxml2-dev libssl-dev
+    - name: configure
+      run: |
+        ./configure --prefix="$PWD/inst" --enable-cassert --enable-debug \
+            --with-uuid=e2fs --with-libxml --with-openssl
+    - name: compile
+      run: make -j"$(nproc)" -s
+    - name: run repro script
+      continue-on-error: true
+      run: make -C contrib/ivorysql_ora oracle-check ORA_REGRESS=zz_repro
+    - name: show results
+      if: always()
+      run: |
+        echo "================ results/zz_repro.out ================"
+        cat contrib/ivorysql_ora/results/zz_repro.out || true
+        echo "================ server log tail ================"
+        find contrib/ivorysql_ora -name postmaster.log -exec tail -n 120 {} \; || true
