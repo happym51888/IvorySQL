@@ -3,6 +3,8 @@ name: zz_repro
 on:
   push:
     branches: [ ci/repro-scratch ]
+  pull_request:
+    branches: [ ci/repro-base ]
   workflow_dispatch:
 
 permissions:
