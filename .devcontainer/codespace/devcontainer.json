@@ -1,0 +1,8 @@
+{
+  "name": "IvorySQL repro",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu-24.04",
+  "features": {
+    "ghcr.io/devcontainers/features/sshd:1": {}
+  },
+  "postCreateCommand": "sudo apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y build-essential bison flex pkg-config libicu-dev libreadline-dev zlib1g-dev uuid-dev libxml2-dev libssl-dev gdb ccache"
+}
